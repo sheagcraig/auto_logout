@@ -12,5 +12,5 @@ loginwindow, but, that frequently left users with a glitched out loginwindow
 So I eventually decided to just reboot the computer. Of course, this requires
 a change to the sudoers file, which is why there is a postflight script.
 
-This is mean to be built with The Luggage, but can certainly be built in other
+This is meant to be built with The Luggage, but can certainly be built in other
 ways.
