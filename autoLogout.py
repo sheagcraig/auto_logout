@@ -1,15 +1,9 @@
 #!/usr/bin/python
 
-"""Check for whether idle time has exceeded some set amount of time,
-prompt user for a chance to prevent logout, and then forcibly logout
-without allowing user to save work.
+#Check for whether idle time has exceeded a set amount of time.
+#Prompt user for a chance to prevent logout, and then forcibly logout without allowing user to save work.
 
-"""
-import sys
-import re
-import shlex
-import subprocess
-import datetime
+import datetime, re, shlex, subprocess, sys
 
 # Number of seconds to wait before initiating a logout
 MAXIDLE = 1800
