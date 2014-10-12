@@ -9,7 +9,7 @@ loginwindow```, but, that frequently left users with a glitched out loginwindow
 (Go figure...)
 
 So I eventually decided to just reboot the computer. Of course, this requires
-a change to the sudoers file, which is why there is a postinstall script.
+a change to the sudoers file, which is why there is a postinstall script. Please take note! As configured, this will allow *any* user to reboot or shutdown the computer using the commandline ```reboot``` and ```shutdown``` commands.
 
 If the computer has a power schedule, and the machine is past the scheduled shutdown time, it will just shut down instead of reboot.
 
