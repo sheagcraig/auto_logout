@@ -8,4 +8,4 @@ PAYLOAD=\
 		pack-usr-local-bin-autoLogout.py\
 		pack-script-postinstall
 
-PACKAGE_VERSION=1.4
+PACKAGE_VERSION=1.5

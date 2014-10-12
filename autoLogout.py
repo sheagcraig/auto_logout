@@ -19,7 +19,7 @@ LO_TIMEOUT = 60
 
 def run_applescript(script):
     """Run an applescript"""
-    process = subprocess.Popen(['osascript', '-'], stdout=subprocess.PIPE, 
+    process = subprocess.Popen(['osascript', '-'], stdout=subprocess.PIPE,
                                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     result, err = process.communicate(script)
 
@@ -53,7 +53,7 @@ def shutdown():
 
 def get_shutdown_time():
     """Return a datetime.time object representing the time system is supposed
-    to shut itself down
+    to shut itself down, or None if no schedule has been set.
 
     """
     # Get the schedule items from pmset
@@ -65,9 +65,13 @@ def get_shutdown_time():
     pattern = re.compile(r'(shutdown at )(\d{1,2}:\d{2}[AP]M)')
     final = pattern.search(result[0])
 
-    # Create a datetime object from the unhelpful apple format
-    today = datetime.date.today().strftime('%Y%m%d')
-    shutdown_time = datetime.datetime.strptime(today + final.group(2), '%Y%m%d%I:%M%p')
+    if final:
+        # Create a datetime object from the unhelpful apple format
+        today = datetime.date.today().strftime('%Y%m%d')
+        shutdown_time = datetime.datetime.strptime(today + final.group(2),
+                                                   '%Y%m%d%I:%M%p')
+    else:
+        shutdown_time = None
 
     return shutdown_time
 
@@ -103,9 +107,10 @@ def check_idle():
         if result == 1:
             sys.exit()
         else:
-            # If it's past shutdown time, go straight to shutting down
+            # If it's past shutdown time, go straight to shutting down. If
+            # there is no schedule, or it's before scheduled shutdown, restart.
             shutdown_time = get_shutdown_time()
-            if datetime.datetime.now() > shutdown_time:
+            if shutdown_time and datetime.datetime.now() > shutdown_time:
                 shutdown()
             else:
                 restart()
