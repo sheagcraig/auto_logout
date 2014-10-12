@@ -23,8 +23,6 @@ def run_applescript(script):
                                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     result, err = process.communicate(script)
 
-    if err:
-        raise Exception(err)
     return process.returncode
 
 
@@ -98,13 +96,10 @@ def check_idle():
                 display dialog "Logging out idle user:\nClick Cancel to prevent automatic logout." buttons "Cancel" giving up after %i with icon 0
             end tell""" % LO_TIMEOUT
 
-        try:
-            result = run_applescript(script)
-        except:
-            # If user cancels, just ignore the exception
-            pass
+        applescript_result = run_applescript(script)
 
-        if result == 1:
+        if applescript_result != 0:
+            # User cancelled
             sys.exit()
         else:
             # If it's past shutdown time, go straight to shutting down. If
