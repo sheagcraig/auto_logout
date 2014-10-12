@@ -14,9 +14,9 @@ a change to the sudoers file, which is why there is a postinstall script. Please
 If the computer has a power schedule, and the machine is past the scheduled shutdown time, it will just shut down instead of reboot.
 
 There are a few variables that you can adjust to suit your environment:
-* You can set the number of seconds after which a system is considered to be idle. Edit the ```MAXIDLE``` constant at the top of autoLogout.py.
-* You can set the number of seconds a user has to cancel the auto logout. Edit the ```LO_TIMEOUT``` constant at the top of autoLogout.py.
-* You can change the interval after which the LaunchAgent runs. Just edit the ```StartInterval``` value in the org.da.autoLogout.plist file. It's configured here for every 5 minutes.
+* You can set the number of seconds after which a system is considered to be idle. Edit the ```MAXIDLE``` constant at the top of autoLogout.py. (Configured for 30 minutes).
+* You can set the number of seconds a user has to cancel the auto logout. Edit the ```LO_TIMEOUT``` constant at the top of autoLogout.py. (Configured for 60 seconds).
+* You can change the interval after which the LaunchAgent runs. Just edit the ```StartInterval``` value in the org.da.autoLogout.plist file. (Configured for execution every 5 minutes).
 
 This is meant to be built with The Luggage, but can certainly be built in other
 ways. If you're happy to just use it as is, the releases section has a prebuilt package.
