@@ -11,6 +11,7 @@ import shlex
 import subprocess
 import datetime
 
+
 # Number of seconds to wait before initiating a logout
 MAXIDLE = 1800
 # Number of seconds user has to cancel logout
@@ -18,7 +19,14 @@ LO_TIMEOUT = 60
 
 
 def run_applescript(script):
-    """Run an applescript"""
+    """Run an applescript.
+
+    This function just returns the returncode of the osascript command.
+    However, the result and err variables contain more information on what the
+    user did, so if you are doing more serious applescript result parsing,
+    use them.
+
+    """
     process = subprocess.Popen(['osascript', '-'], stdout=subprocess.PIPE,
                                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     result, err = process.communicate(script)
@@ -27,16 +35,20 @@ def run_applescript(script):
 
 
 def logout():
-    """Forcibly log current user out of the gui"""
-    #pid = get_loginwindow_pid()
+    """Forcibly log current user out of the gui.
+
+    This function is currently unused. killall loginwindow often results in
+    corrupted loginwindow graphics. The function remains more as documentation
+    of how to do these things.
+
+    """
     args = shlex.split('sudo -u root /usr/bin/killall -9 loginwindow')
     process = subprocess.Popen(args, shell=False)
     process.communicate()
 
 
 def restart():
-    """Prompt, but then failing that, forcibly restart the computer"""
-    #args = shlex.split('shutdown -r now')
+    """Prompt, but then failing that, forcibly restart the computer."""
     args = shlex.split('sudo -u root reboot -q')
     process = subprocess.Popen(args, shell=False)
     process.communicate()
@@ -75,7 +87,7 @@ def get_shutdown_time():
 
 
 def check_idle():
-    """Check the IOREG for the idletime of the input devices"""
+    """Check the IOREG for the idletime of the input devices."""
     args = shlex.split('ioreg -c IOHIDSystem')
     process = subprocess.Popen(args, stdout=subprocess.PIPE, shell=False)
     result = process.communicate()
@@ -112,8 +124,8 @@ def check_idle():
 
 
 def get_loginwindow_pid():
-    """Get the pid for the user's loginwindow
-    Currently unused since we need to use killall to pull this off
+    """Get the pid for the user's loginwindow.
+    Currently unused since we need to use killall to pull this off.
 
     """
     args = shlex.split('ps -Axjc')
