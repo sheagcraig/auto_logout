@@ -1,4 +1,4 @@
-Package to automatically hard-logout users in lab situations.
+Package to automatically hard-logout users in OS X computer labs.
 
 Computers can be set using the builtin tools to automatically logout users
 after a predetermined amount of time. However, it will wait, and ultimately
