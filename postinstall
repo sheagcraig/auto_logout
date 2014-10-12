@@ -2,9 +2,10 @@
 
 # We have to be careful when editing the sudoers file. Syntax errors cause problems!
 #STRING="ALL	ALL=(root) NOPASSWD: /usr/bin/killall -9 loginwindow"
-STRING="ALL	ALL=(root) NOPASSWD: /sbin/reboot -q"
+REBOOT="ALL	ALL=(root) NOPASSWD: /sbin/reboot -q"
+SHUTDOWN="ALL	ALL=(root) NOPASSWD: /sbin/shutdown -h now"
 
-if $(grep -q "$STRING" /etc/sudoers); then
+if $(grep -q "$REBOOT" /etc/sudoers) && $(grep -q "$SHUTDOWN" /etc/sudoers); then
 	# Nothing to be done
 	exit 0
 fi
@@ -12,7 +13,8 @@ fi
 # Make a working copy
 cp /etc/sudoers /tmp/sudoers.tmp
 # Echo in our changes
-echo "$STRING" >> /tmp/sudoers.tmp
+echo "$REBOOT" >> /tmp/sudoers.tmp
+echo "$SHUTDOWN" >> /tmp/sudoers.tmp
 
 # Validate the changes
 visudo -cqsf /tmp/sudoers.tmp

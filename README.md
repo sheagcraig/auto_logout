@@ -13,7 +13,7 @@ a change to the sudoers file, which is why there is a postflight script.
 
 If the computer has a power schedule, and the machine is past the scheduled shutdown time, it will just shut down instead of reboot.
 
-You can change the interval after which the LaunchAgent runs. Just edit the ```StartInterval``` value in the org.da.autoLogout.plist file.
+You can change the interval after which the LaunchAgent runs. Just edit the ```StartInterval``` value in the org.da.autoLogout.plist file. It's configured here for every 5 minutes.
 
 This is meant to be built with The Luggage, but can certainly be built in other
 ways.
