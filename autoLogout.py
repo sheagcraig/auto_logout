@@ -5,17 +5,18 @@ prompt user for a chance to prevent logout, and then forcibly logout
 without allowing user to save work.
 
 """
-import sys
+import datetime
 import re
 import shlex
 import subprocess
-import datetime
+import sys
+import syslog
 
 
 # Number of seconds to wait before initiating a logout
 MAXIDLE = 1800
 # Number of seconds user has to cancel logout
-LO_TIMEOUT = 60
+LO_TIMEOUT = 10
 
 
 def run_applescript(script):
@@ -88,6 +89,7 @@ def get_shutdown_time():
 
 def check_idle():
     """Check the IOREG for the idletime of the input devices."""
+    syslog.syslog(syslog.LOG_ALERT, "Checking idle time.")
     args = shlex.split('ioreg -c IOHIDSystem')
     process = subprocess.Popen(args, stdout=subprocess.PIPE, shell=False)
     result = process.communicate()
@@ -99,10 +101,12 @@ def check_idle():
     # Get our result from the match object;
     # Idle time is in really absurd units, convert to seconds
     idle_time = float(final.group(2)) / 1000000000
-    print(idle_time, MAXIDLE)
+    syslog.syslog(syslog.LOG_ALERT, "System Idle: %f seconds out of %i "
+                  "allowed." % (idle_time, MAXIDLE))
 
     # Determine if we are idling
     if idle_time > MAXIDLE:
+        syslog.syslog(syslog.LOG_ALERT, "System is idle.")
         script = """
             tell application "System Events"
                 display dialog "Logging out idle user:\nClick Cancel to prevent automatic logout." buttons "Cancel" giving up after %i with icon 0
@@ -112,15 +116,23 @@ def check_idle():
 
         if applescript_result != 0:
             # User cancelled
+            syslog.syslog(syslog.LOG_ALERT, "User cancelled auto logout.")
             sys.exit()
         else:
             # If it's past shutdown time, go straight to shutting down. If
             # there is no schedule, or it's before scheduled shutdown, restart.
             shutdown_time = get_shutdown_time()
+            syslog.syslog(syslog.LOG_ALERT,
+                          "Scheduled system shutdown time: %s" % shutdown_time)
             if shutdown_time and datetime.datetime.now() > shutdown_time:
+                syslog.syslog(syslog.LOG_ALERT, "Shutdown time is nigh. "
+                              "Shutting down.")
                 shutdown()
             else:
+                syslog.syslog(syslog.LOG_ALERT, "Restarting")
                 restart()
+    else:
+        syslog.syslog(syslog.LOG_ALERT, "System is not idle.")
 
 
 def get_loginwindow_pid():
