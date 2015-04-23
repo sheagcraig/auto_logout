@@ -62,7 +62,7 @@ def run_applescript(script):
         what the user did, so if you are doing more serious applescript
         result parsing, use them,
     """
-    process = subprocess.Popen(['osascript', '-'], stdout=subprocess.PIPE,
+    process = subprocess.Popen(["osascript", "-"], stdout=subprocess.PIPE,
                                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     result, err = process.communicate(script)
     syslog.syslog(syslog.LOG_ALERT, "Applescript result: %s Error: %s" %
@@ -107,14 +107,14 @@ def get_shutdown_time():
     result = subprocess.check_output(["pmset", "-g", "sched"])
 
     # Get the shutdown time
-    pattern = re.compile(r'(shutdown at )(\d{1,2}:\d{2}[AP]M)')
+    pattern = re.compile(r"(shutdown at )(\d{1,2}:\d{2}[AP]M)")
     final = pattern.search(result)
 
     if final:
         # Create a datetime object from the unhelpful apple format
-        today = datetime.date.today().strftime('%Y%m%d')
+        today = datetime.date.today().strftime("%Y%m%d")
         shutdown_time = datetime.datetime.strptime(
-            today + final.group(2), '%Y%m%d%I:%M%p')
+            today + final.group(2), "%Y%m%d%I:%M%p")
     else:
         shutdown_time = None
 
@@ -150,7 +150,7 @@ def get_loginwindow_pid():
     """
     pid = None
     result = subprocess.check_output(["ps", "-Axjc"])
-    pattern = re.compile(r'.*loginwindow')
+    pattern = re.compile(r".*loginwindow")
     for line in result.splitlines():
         match = pattern.search(line)
         if match:
@@ -193,5 +193,5 @@ def main():
         syslog.syslog(syslog.LOG_ALERT, "System is not idle.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
