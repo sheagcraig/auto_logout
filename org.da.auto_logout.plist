@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-		<string>org.da.autoLogout</string>
+		<string>org.da.auto_logout</string>
 	<key>ProgramArguments</key>
 		<array>
-			<string>/usr/local/bin/autoLogout.py</string>
+			<string>/usr/local/bin/auto_logout.py</string>
 		</array>
 	<key>KeepAlive</key>
 	<false/>

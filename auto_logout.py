@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-autoLogout.py
+auto_logout.py
 
 Check for whether system idle time has exceeded some set amount of time,
 as specified in seconds with global MAXIDLE.
@@ -79,20 +79,20 @@ def logout():
     documentation of how to do these things.
     """
     result = subprocess.check_output(["sudo", "-u", "root", "/usr/bin/killall",
-                                      "-9", "loginwindow"], shell=False)
+                                      "-9", "loginwindow"])
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def restart():
     """Forcibly restart the computer."""
-    result = subprocess.check_output(["sudo", "-u", "root", "reboot", "-q"],
-                                     shell=False)
+    result = subprocess.check_output(
+        ["sudo", "-u", "root", "/sbin/reboot", "-q"])
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def shutdown():
     """Shutdown the computer immediately."""
-    result = subprocess.check_output(["shutdown", "-h", "now"], shell=False)
+    result = subprocess.check_output(["/sbin/shutdown", "-h", "now"])
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
@@ -121,22 +121,47 @@ def get_shutdown_time():
     return shutdown_time
 
 
-def check_idle():
-    """Check the IOREG for the idletime of the input devices."""
-    syslog.syslog(syslog.LOG_ALERT, "Checking idle time.")
+def get_idle():
+    """Check the IOREG for the idle time of the input devices.
+
+    Returns:
+        Float number of seconds computer has been idle.
+    """
     result = subprocess.check_output(["ioreg", "-c", "IOHIDSystem"])
 
-    # Strip out the first result (there are lots and lots of results,
+    # Strip out the first result (there are lots and lots of results;
     # close enough!
     pattern = re.compile(r'("HIDIdleTime" = )([0-9]*)')
     final = pattern.search(result)
-    # Get our result from the match object;
-    # Idle time is in really absurd units, convert to seconds
+    # Idle time is in really absurd units; convert to seconds.
     idle_time = float(final.group(2)) / 1000000000
     syslog.syslog(syslog.LOG_ALERT, "System Idle: %f seconds out of %i "
                   "allowed." % (idle_time, MAXIDLE))
 
-    # Determine if we are idling
+    return idle_time
+
+
+def get_loginwindow_pid():
+    """Get the pid for the user's loginwindow.
+
+    Currently unused since we need to use killall to pull this off.
+
+    Returns: An int process ID for the loginwindow.
+    """
+    pid = None
+    result = subprocess.check_output(["ps", "-Axjc"])
+    pattern = re.compile(r'.*loginwindow')
+    for line in result.splitlines():
+        match = pattern.search(line)
+        if match:
+            pid = match.group(0).split()[1]
+
+    return int(pid)
+
+
+def main():
+    """Main program"""
+    idle_time = get_idle()
     if idle_time > MAXIDLE:
         syslog.syslog(syslog.LOG_ALERT, "System is idle.")
         script = """
@@ -166,29 +191,6 @@ def check_idle():
                 restart()
     else:
         syslog.syslog(syslog.LOG_ALERT, "System is not idle.")
-
-
-def get_loginwindow_pid():
-    """Get the pid for the user's loginwindow.
-
-    Currently unused since we need to use killall to pull this off.
-
-    Returns: An int process ID for the loginwindow.
-    """
-    pid = None
-    result = subprocess.check_output(["ps", "-Axjc"])
-    pattern = re.compile(r'.*loginwindow')
-    for line in result.splitlines():
-        match = pattern.search(line)
-        if match:
-            pid = match.group(0).split()[1]
-
-    return int(pid)
-
-
-def main():
-    """Main program"""
-    check_idle()
 
 
 if __name__ == '__main__':
