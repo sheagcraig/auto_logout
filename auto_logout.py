@@ -42,6 +42,7 @@ import sys
 import syslog
 
 
+__version__ = 1.5.1
 # Number of seconds to wait before initiating a logout
 MAXIDLE = 1800
 # Number of seconds user has to cancel logout
