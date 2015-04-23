@@ -17,9 +17,21 @@
 """
 autoLogout.py
 
-Check for whether idle time has exceeded some set amount of time,
-prompt user for a chance to prevent logout, and then forcibly logout
-without allowing user to save work.
+Check for whether system idle time has exceeded some set amount of time,
+as specified in seconds with global MAXIDLE.
+
+If system is idle, prompt user for a chance to prevent logout.
+
+If no user intervention prevents logout, either restart the computer or
+shut down, depending on whether the time is past the scheduled shutdown
+time.
+
+Code for killing the loginwindow is included for reference purposes,
+although this method of force-logging out is not recommended due to
+graphics glitches.
+
+Restarting the computer is the most stable way to forcibly logout a user
+who may have applications preventing logout via the normal means.
 """
 
 
