@@ -1,10 +1,28 @@
 #!/usr/bin/python
-
-"""Check for whether idle time has exceeded some set amount of time,
-prompt user for a chance to prevent logout, and then forcibly logout
-without allowing user to save work.
+# Copyright (C) 2014 Shea G Craig
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+autoLogout.py
+
+Check for whether idle time has exceeded some set amount of time,
+prompt user for a chance to prevent logout, and then forcibly logout
+without allowing user to save work.
+"""
+
+
 import datetime
 import re
 import subprocess
@@ -22,9 +40,9 @@ def run_applescript(script):
     """Run an applescript.
 
     This function just returns the returncode of the osascript command.
-    However, the result and err variables contain more information on what the
-    user did, so if you are doing more serious applescript result parsing,
-    use them.
+    However, the result and err variables contain more information on
+    what the user did, so if you are doing more serious applescript
+    result parsing, use them.
 
     """
     process = subprocess.Popen(['osascript', '-'], stdout=subprocess.PIPE,
@@ -39,9 +57,9 @@ def run_applescript(script):
 def logout():
     """Forcibly log current user out of the gui.
 
-    This function is currently unused. killall loginwindow often results in
-    corrupted loginwindow graphics. The function remains more as documentation
-    of how to do these things.
+    This function is currently unused. killall loginwindow often results
+    in corrupted loginwindow graphics. The function remains more as
+    documentation of how to do these things.
 
     """
     result = subprocess.check_output(["sudo", "-u", "root", "/usr/bin/killall",
@@ -63,8 +81,11 @@ def shutdown():
 
 
 def get_shutdown_time():
-    """Return a datetime.time object representing the time system is supposed
-    to shut itself down, or None if no schedule has been set.
+    """Return a system's shutdown time.
+
+    Returns:
+        A datetime.time object representing the time system is supposed
+        to shut itself down, or None if no schedule has been set.
 
     """
     # Get the schedule items from pmset
