@@ -51,11 +51,16 @@ LO_TIMEOUT = 10
 def run_applescript(script):
     """Run an applescript.
 
-    This function just returns the returncode of the osascript command.
-    However, the result and err variables contain more information on
-    what the user did, so if you are doing more serious applescript
-    result parsing, use them.
+    Args:
+        script: A string of the entire applescript. Must include proper
+            formatting.
 
+    Returns:
+        The returncode of the osascript command.
+
+        However, the result and err variables contain more information on
+        what the user did, so if you are doing more serious applescript
+        result parsing, use them,
     """
     process = subprocess.Popen(['osascript', '-'], stdout=subprocess.PIPE,
                                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -72,7 +77,6 @@ def logout():
     This function is currently unused. killall loginwindow often results
     in corrupted loginwindow graphics. The function remains more as
     documentation of how to do these things.
-
     """
     result = subprocess.check_output(["sudo", "-u", "root", "/usr/bin/killall",
                                       "-9", "loginwindow"], shell=False)
@@ -80,14 +84,14 @@ def logout():
 
 
 def restart():
-    """Prompt, but then failing that, forcibly restart the computer."""
+    """Forcibly restart the computer."""
     result = subprocess.check_output(["sudo", "-u", "root", "reboot", "-q"],
                                      shell=False)
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def shutdown():
-    """Shutdown the computer immediately"""
+    """Shutdown the computer immediately."""
     result = subprocess.check_output(["shutdown", "-h", "now"], shell=False)
     syslog.syslog(syslog.LOG_ALERT, result)
 
@@ -98,7 +102,6 @@ def get_shutdown_time():
     Returns:
         A datetime.time object representing the time system is supposed
         to shut itself down, or None if no schedule has been set.
-
     """
     # Get the schedule items from pmset
     result = subprocess.check_output(["pmset", "-g", "sched"])
@@ -110,8 +113,8 @@ def get_shutdown_time():
     if final:
         # Create a datetime object from the unhelpful apple format
         today = datetime.date.today().strftime('%Y%m%d')
-        shutdown_time = datetime.datetime.strptime(today + final.group(2),
-                                                   '%Y%m%d%I:%M%p')
+        shutdown_time = datetime.datetime.strptime(
+            today + final.group(2), '%Y%m%d%I:%M%p')
     else:
         shutdown_time = None
 
@@ -148,8 +151,9 @@ def check_idle():
             syslog.syslog(syslog.LOG_ALERT, "User cancelled auto logout.")
             sys.exit()
         else:
-            # If it's past shutdown time, go straight to shutting down. If
-            # there is no schedule, or it's before scheduled shutdown, restart.
+            # If it's past shutdown time, go straight to shutting down.
+            # If there is no schedule, or it's before scheduled
+            # shutdown, restart.
             shutdown_time = get_shutdown_time()
             syslog.syslog(syslog.LOG_ALERT,
                           "Scheduled system shutdown time: %s" % shutdown_time)
