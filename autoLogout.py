@@ -7,7 +7,6 @@ without allowing user to save work.
 """
 import datetime
 import re
-import shlex
 import subprocess
 import sys
 import syslog
@@ -31,6 +30,8 @@ def run_applescript(script):
     process = subprocess.Popen(['osascript', '-'], stdout=subprocess.PIPE,
                                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     result, err = process.communicate(script)
+    syslog.syslog(syslog.LOG_ALERT, "Applescript result: %s Error: %s" %
+                  (result, err))
 
     return process.returncode
 
@@ -43,23 +44,22 @@ def logout():
     of how to do these things.
 
     """
-    args = shlex.split('sudo -u root /usr/bin/killall -9 loginwindow')
-    process = subprocess.Popen(args, shell=False)
-    process.communicate()
+    result = subprocess.check_output(["sudo", "-u", "root", "/usr/bin/killall",
+                                      "-9", "loginwindow"], shell=False)
+    syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def restart():
     """Prompt, but then failing that, forcibly restart the computer."""
-    args = shlex.split('sudo -u root reboot -q')
-    process = subprocess.Popen(args, shell=False)
-    process.communicate()
+    result = subprocess.check_output(["sudo", "-u", "root", "reboot", "-q"],
+                                     shell=False)
+    syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def shutdown():
     """Shutdown the computer immediately"""
-    args = shlex.split('shutdown -h now')
-    process = subprocess.Popen(args, shell=False)
-    result = process.communicate()
+    result = subprocess.check_output(["shutdown", "-h", "now"], shell=False)
+    syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def get_shutdown_time():
@@ -68,13 +68,11 @@ def get_shutdown_time():
 
     """
     # Get the schedule items from pmset
-    args = shlex.split('pmset -g sched')
-    process = subprocess.Popen(args, stdout=subprocess.PIPE, shell=False)
-    result = process.communicate()
+    result = subprocess.check_output(["pmset", "-g", "sched"])
 
     # Get the shutdown time
     pattern = re.compile(r'(shutdown at )(\d{1,2}:\d{2}[AP]M)')
-    final = pattern.search(result[0])
+    final = pattern.search(result)
 
     if final:
         # Create a datetime object from the unhelpful apple format
@@ -90,14 +88,12 @@ def get_shutdown_time():
 def check_idle():
     """Check the IOREG for the idletime of the input devices."""
     syslog.syslog(syslog.LOG_ALERT, "Checking idle time.")
-    args = shlex.split('ioreg -c IOHIDSystem')
-    process = subprocess.Popen(args, stdout=subprocess.PIPE, shell=False)
-    result = process.communicate()
+    result = subprocess.check_output(["ioreg", "-c", "IOHIDSystem"])
 
-    # Strip out the first result (there are lots and lots of results, close
-    # enough!
+    # Strip out the first result (there are lots and lots of results,
+    # close enough!
     pattern = re.compile(r'("HIDIdleTime" = )([0-9]*)')
-    final = pattern.search(result[0])
+    final = pattern.search(result)
     # Get our result from the match object;
     # Idle time is in really absurd units, convert to seconds
     idle_time = float(final.group(2)) / 1000000000
@@ -137,20 +133,20 @@ def check_idle():
 
 def get_loginwindow_pid():
     """Get the pid for the user's loginwindow.
+
     Currently unused since we need to use killall to pull this off.
 
+    Returns: An int process ID for the loginwindow.
     """
-    args = shlex.split('ps -Axjc')
-    process = subprocess.Popen(args, stdout=subprocess.PIPE, shell=False)
-    result = process.communicate()
-
+    pid = None
+    result = subprocess.check_output(["ps", "-Axjc"])
     pattern = re.compile(r'.*loginwindow')
-    for line in result:
-        match = pattern.search(result[0])
+    for line in result.splitlines():
+        match = pattern.search(line)
         if match:
             pid = match.group(0).split()[1]
 
-    return pid
+    return int(pid)
 
 
 def main():
