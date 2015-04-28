@@ -42,11 +42,11 @@ import sys
 import syslog
 
 
-__version__ = 1.5.1
+__version__ = "1.5.2"
 # Number of seconds to wait before initiating a logout
 MAXIDLE = 1800
 # Number of seconds user has to cancel logout
-LO_TIMEOUT = 10
+LO_TIMEOUT = 120
 
 
 def run_applescript(script):
