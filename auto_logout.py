@@ -36,45 +36,60 @@ who may have applications preventing logout via the normal means.
 
 
 import datetime
+import getpass
 import re
 import subprocess
 import sys
 import syslog
 
+# pylint: disable=no-name-in-module
+from AppKit import (NSImage, NSAlert, NSTimer, NSRunLoop,
+                    NSModalPanelRunLoopMode, NSApp, NSRunAbortedResponse)
+# pylint: enable=no-name-in-module
+
 
 __version__ = "1.5.3"
-# Number of seconds to wait before initiating a logout
+# Number of seconds to wait before initiating a logout.
 MAXIDLE = 1800
-# Number of seconds user has to cancel logout
+# Number of seconds user has to cancel logout.
 LO_TIMEOUT = 60
 # Times greater than 119 seconds will time out Applescript and thus
 # won't work. Therefore, enforce a max.
 if LO_TIMEOUT >= 120:
     LO_TIMEOUT = 119
+# Icon displayed as the app icon for the alert dialog.
+ICON_PATH = "/usr/local/share/EvilCloud.png"
 
 
-def run_applescript(script):
-    """Run an applescript.
+# pylint: disable=no-init
+class Alert(NSAlert):
+    """Subclasses NSAlert to include a timeout."""
 
-    Args:
-        script: A string of the entire applescript. Must include proper
-            formatting.
+    def setIconWithContentsOfFile_(self, path):
+        """Convenience method for adding an icon.
 
-    Returns:
-        The returncode of the osascript command.
+        Args:
+            path: String path to a valid NSImage filetype (png)
+        """
+        icon = NSImage.alloc().initWithContentsOfFile_(path)
+        self.setIcon_(icon)
 
-        However, the result and err variables contain more information on
-        what the user did, so if you are doing more serious applescript
-        result parsing, use them,
-    """
-    process = subprocess.Popen(["osascript", "-"], stdout=subprocess.PIPE,
-                               stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-    result, err = process.communicate(script)
-    syslog.syslog(syslog.LOG_ALERT, "Applescript result: %s Error: %s" %
-                  (result, err))
+    def setTimeToGiveUp_(self, time):
+        """Configure alert to give up after time seconds."""
+        self.timer = \
+            NSTimer.timerWithTimeInterval_target_selector_userInfo_repeats_(
+                time, self, "killWindow", None, False)
 
-    return process.returncode
+    def present(self):
+        NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer,
+                                                     NSModalPanelRunLoopMode)
+        result = self.runModal()
+        return result
 
+    def killWindow(self):
+        NSApp.abortModal()
+
+# pylint: enable=no-init
 
 def logout():
     """Forcibly log current user out of the gui.
@@ -164,19 +179,25 @@ def get_loginwindow_pid():
     return int(pid)
 
 
+def build_alert():
+    alert = Alert.alloc().init()
+    alert.setMessageText_("Logging out idle user in %i seconds!" % LO_TIMEOUT)
+    alert.setInformativeText_("Click Cancel to prevent automatic logout.")
+    alert.addButtonWithTitle_("Cancel")
+    alert.setIconWithContentsOfFile_(ICON_PATH)
+    alert.setTimeToGiveUp_(LO_TIMEOUT)
+    return alert
+
+
 def main():
     """Main program"""
     idle_time = get_idle()
-    if idle_time > MAXIDLE:
+    #if idle_time > MAXIDLE:
+    if True:
         syslog.syslog(syslog.LOG_ALERT, "System is idle.")
-        script = """
-            tell application "System Events"
-                display dialog "Logging out idle user:\nClick Cancel to prevent automatic logout." buttons "Cancel" giving up after %i with icon 0
-            end tell""" % LO_TIMEOUT
-
-        applescript_result = run_applescript(script)
-
-        if applescript_result != 0:
+        syslog.syslog(syslog.LOG_ALERT, "Idle user: %s" % getpass.getuser())
+        alert = build_alert()
+        if alert.present() != NSRunAbortedResponse:
             # User cancelled
             syslog.syslog(syslog.LOG_ALERT, "User cancelled auto logout.")
             sys.exit()
