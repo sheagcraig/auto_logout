@@ -15,7 +15,7 @@ If the computer has a power schedule, and the machine is past the scheduled shut
 
 There are a few variables that you can adjust to suit your environment:
 * You can set the number of seconds after which a system is considered to be idle. Edit the ```MAXIDLE``` constant at the top of autoLogout.py. (Configured for 30 minutes).
-* You can set the number of seconds a user has to cancel the auto logout. Edit the ```LO_TIMEOUT``` constant at the top of autoLogout.py. (Configured for 60 seconds).
+* You can set the number of seconds a user has to cancel the auto logout. Edit the ```LO_TIMEOUT``` constant at the top of autoLogout.py. (Configured for 60 seconds). Do not set this over 119 seconds; at >= 120 seconds Applescript will time out and inaccurately report that the user has cancelled.
 * You can change the interval after which the LaunchAgent runs. Just edit the ```StartInterval``` value in the org.da.autoLogout.plist file. (Configured for execution every 5 minutes).
 
 This is meant to be built with The Luggage, but can certainly be built in other
