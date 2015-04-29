@@ -6,6 +6,7 @@ REVERSE_DOMAIN=org.da
 PAYLOAD=\
 		pack-Library-LaunchAgents-org.da.auto_logout.plist\
 		pack-usr-local-bin-auto_logout.py\
+		pack-usr-local-share-EvilCloud.png\
 		pack-script-postinstall
 
 PACKAGE_VERSION=1.5.3
