@@ -1,10 +1,11 @@
+## auto_logout
 Package to automatically hard-logout users in OS X computer labs.
 
 Computers can be set using the builtin tools to automatically logout users
 after a predetermined amount of time. However, it will wait, and ultimately
-fail, if a user has unsaved changes in an Office document, etc.
+fail, if a user has unsaved changes in an Office document, running processes in a terminal session, etc.
 
-I tried numerous ways of doing this-the first idea was to ```killall -9
+I tried numerous ways of doing this--the first idea was to ```killall -9
 loginwindow```, but, that frequently left users with a glitched out loginwindow
 (Go figure...)
 
@@ -13,10 +14,18 @@ a change to the sudoers file, which is why there is a postinstall script. Please
 
 If the computer has a power schedule, and the machine is past the scheduled shutdown time, it will just shut down instead of reboot.
 
-There are a few variables that you can adjust to suit your environment:
-* You can set the number of seconds after which a system is considered to be idle. Edit the ```MAXIDLE``` constant at the top of autoLogout.py. (Configured for 30 minutes).
-* You can set the number of seconds a user has to cancel the auto logout. Edit the ```LO_TIMEOUT``` constant at the top of autoLogout.py. (Configured for 60 seconds). Do not set this over 119 seconds; at >= 120 seconds Applescript will time out and inaccurately report that the user has cancelled.
-* You can change the interval after which the LaunchAgent runs. Just edit the ```StartInterval``` value in the org.da.autoLogout.plist file. (Configured for execution every 5 minutes).
+### Installation
+Grab the latest package from the releases section and install on clients to use the default timing and icon.
 
-This is meant to be built with The Luggage, but can certainly be built in other
-ways. If you're happy to just use it as is, the releases section has a prebuilt package.
+If you would like to build yourself to incorporate custom settings, a Makefile is provided for use with [the Luggage](https://github.com/unixorn/luggage). Of course, feel free to use your choice of package building software.
+
+### Customization
+There are a few variables that you can adjust to suit your environment.
+
+In ```/usr/local/bin/auto_logout.py```:
+* ```MAXIDLE```: The number of seconds after which a system is considered to be idle. (Default is 1800 seconds, i.e. 30 minutes).
+* ```LO_TIMEOUT```: The number of seconds a user has to cancel the auto logout after the alert runs. (Configured for 120 seconds).
+* ```ICON_PATH```: A valid path to an icon file (a .png) to use in the alert window. (Defaults to a nasty dark cloud icon).
+
+In ```/Library/LaunchAgents/org.da.autoLogout.plist```
+* ```StartInterval``` The interval, in seconds, after which the LaunchAgent runs. (Defaults to run every 5 minutes).

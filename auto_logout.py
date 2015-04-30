@@ -52,11 +52,7 @@ __version__ = "1.5.3"
 # Number of seconds to wait before initiating a logout.
 MAXIDLE = 1800
 # Number of seconds user has to cancel logout.
-LO_TIMEOUT = 60
-# Times greater than 119 seconds will time out Applescript and thus
-# won't work. Therefore, enforce a max.
-if LO_TIMEOUT >= 120:
-    LO_TIMEOUT = 119
+LO_TIMEOUT = 120
 # Icon displayed as the app icon for the alert dialog.
 ICON_PATH = "/usr/local/share/EvilCloud.png"
 
