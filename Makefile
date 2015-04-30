@@ -9,4 +9,7 @@ PAYLOAD=\
 		pack-usr-local-share-EvilCloud.png\
 		pack-script-postinstall
 
-PACKAGE_VERSION=1.5.3
+PACKAGE_VERSION=$(shell python -c "import auto_logout; print auto_logout.__version__")
+
+pack-usr-local-share-%: % l_usr_local_share
+	@sudo ${INSTALL} -m 755 -g wheel -o root "${<}" ${WORK_D}/usr/local/share
