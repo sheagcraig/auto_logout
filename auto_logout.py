@@ -60,10 +60,20 @@ if LO_TIMEOUT >= 120:
 # Icon displayed as the app icon for the alert dialog.
 ICON_PATH = "/usr/local/share/EvilCloud.png"
 
-
+# Cocoa objects must use class func alloc().init(), so pylint doesn't
+# see our init().
 # pylint: disable=no-init
+
+# Methods are named according to PyObjC/Cocoa style.
+# pylint: disable=invalid-name
 class Alert(NSAlert):
     """Subclasses NSAlert to include a timeout."""
+
+    def init(self):  # pylint: disable=super-on-old-class
+        """Add an instance variable for our timer."""
+        self = super(Alert, self).init()
+        self.timer = None
+        return self
 
     def setIconWithContentsOfFile_(self, path):
         """Convenience method for adding an icon.
@@ -72,24 +82,44 @@ class Alert(NSAlert):
             path: String path to a valid NSImage filetype (png)
         """
         icon = NSImage.alloc().initWithContentsOfFile_(path)
-        self.setIcon_(icon)
+        self.setIcon_(icon)  # pylint: disable=no-member
 
     def setTimeToGiveUp_(self, time):
         """Configure alert to give up after time seconds."""
+        # Cocoa objects must use class func alloc().init(), so pylint
+        # doesn't see our init().
+        # pylint: disable=attribute-defined-outside-init
         self.timer = \
             NSTimer.timerWithTimeInterval_target_selector_userInfo_repeats_(
-                time, self, "killWindow", None, False)
+                time, self, "_killWindow", None, False)
+        # pylint: enable=attribute-defined-outside-init
 
     def present(self):
-        NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer,
-                                                     NSModalPanelRunLoopMode)
-        result = self.runModal()
+        """Present the Alert, giving up after configured time..
+
+        Returns: Int result code, based on PyObjC enums. See NSAlert
+            Class reference, but result should be one of:
+                User clicked the cancel button:
+                    NSAlertFirstButtonReturn = 1000
+                Alert timed out:
+                    NSRunAbortedResponse = -1001
+        """
+        if self.timer:
+            NSRunLoop.currentRunLoop().addTimer_forMode_(
+                self.timer, NSModalPanelRunLoopMode)
+        result = self.runModal()  # pylint: disable=no-member
+        print result
         return result
 
-    def killWindow(self):
+    # pylint: disable=no-self-use
+    def _killWindow(self):
+        """Abort the modal window as managed by NSApp."""
         NSApp.abortModal()
+    # pylint: enable=no-self-use
 
 # pylint: enable=no-init
+# pylint: enable=invalid-name
+
 
 def logout():
     """Forcibly log current user out of the gui.
@@ -180,7 +210,8 @@ def get_loginwindow_pid():
 
 
 def build_alert():
-    alert = Alert.alloc().init()
+    """Build an alert for auto-logout notifications."""
+    alert = Alert.alloc().init()  # pylint: disable=no-member
     alert.setMessageText_("Logging out idle user in %i seconds!" % LO_TIMEOUT)
     alert.setInformativeText_("Click Cancel to prevent automatic logout.")
     alert.addButtonWithTitle_("Cancel")
@@ -192,8 +223,7 @@ def build_alert():
 def main():
     """Main program"""
     idle_time = get_idle()
-    #if idle_time > MAXIDLE:
-    if True:
+    if idle_time > MAXIDLE:
         syslog.syslog(syslog.LOG_ALERT, "System is idle.")
         syslog.syslog(syslog.LOG_ALERT, "Idle user: %s" % getpass.getuser())
         alert = build_alert()
