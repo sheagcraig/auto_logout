@@ -43,12 +43,12 @@ import sys
 import syslog
 
 # pylint: disable=no-name-in-module
-from AppKit import (NSImage, NSAlert, NSTimer, NSRunLoop,
+from AppKit import (NSImage, NSAlert, NSTimer, NSRunLoop, NSApplication,
                     NSModalPanelRunLoopMode, NSApp, NSRunAbortedResponse)
 # pylint: enable=no-name-in-module
 
 
-__version__ = "1.5.3"
+__version__ = "1.5.4"
 # Number of seconds to wait before initiating a logout.
 MAXIDLE = 1800
 # Number of seconds user has to cancel logout.
@@ -103,6 +103,10 @@ class Alert(NSAlert):
         if self.timer:
             NSRunLoop.currentRunLoop().addTimer_forMode_(
                 self.timer, NSModalPanelRunLoopMode)
+        # Start a Cocoa application by getting the shared app object.
+        # Make the python app the active app so alert is noticed.
+        app = NSApplication.sharedApplication()
+        app.activateIgnoringOtherApps_(True)
         result = self.runModal()  # pylint: disable=no-member
         print result
         return result
@@ -219,7 +223,8 @@ def build_alert():
 def main():
     """Main program"""
     idle_time = get_idle()
-    if idle_time > MAXIDLE:
+    #if idle_time > MAXIDLE:
+    if True:
         syslog.syslog(syslog.LOG_ALERT, "System is idle.")
         syslog.syslog(syslog.LOG_ALERT, "Idle user: %s" % getpass.getuser())
         alert = build_alert()
@@ -237,10 +242,10 @@ def main():
             if shutdown_time and datetime.datetime.now() > shutdown_time:
                 syslog.syslog(syslog.LOG_ALERT, "Shutdown time is nigh. "
                               "Shutting down.")
-                shutdown()
+                #shutdown()
             else:
                 syslog.syslog(syslog.LOG_ALERT, "Restarting")
-                restart()
+                #restart()
     else:
         syslog.syslog(syslog.LOG_ALERT, "System is not idle.")
 

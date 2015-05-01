@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+### CHANGED
+- Now activates the app over top of all other apps (```NSApplication.activateIgnoringOtherApps_()```)
 
 ## [1.5.3] - 2015-04-30 Kim Chee Hot Pants
 ### CHANGED
