@@ -44,7 +44,8 @@ import syslog
 
 # pylint: disable=no-name-in-module
 from AppKit import (NSImage, NSAlert, NSTimer, NSRunLoop, NSApplication,
-                    NSModalPanelRunLoopMode, NSApp, NSRunAbortedResponse)
+                    NSSound, NSModalPanelRunLoopMode, NSApp,
+                    NSRunAbortedResponse)
 # pylint: enable=no-name-in-module
 
 
@@ -55,6 +56,8 @@ MAXIDLE = 1800
 LO_TIMEOUT = 120
 # Icon displayed as the app icon for the alert dialog.
 ICON_PATH = "/usr/local/share/EvilCloud.png"
+# Sound played when alert is presented. See README.
+ALERT_SOUND = "Submarine"
 
 # Cocoa objects must use class func alloc().init(), so pylint doesn't
 # see our init().
@@ -69,6 +72,7 @@ class Alert(NSAlert):
         """Add an instance variable for our timer."""
         self = super(Alert, self).init()
         self.timer = None
+        self.alert_sound = None
         return self
 
     def setIconWithContentsOfFile_(self, path):
@@ -79,6 +83,14 @@ class Alert(NSAlert):
         """
         icon = NSImage.alloc().initWithContentsOfFile_(path)
         self.setIcon_(icon)  # pylint: disable=no-member
+
+    def setAlertSound_(self, name):
+        """Set the sound to play when alert is presented.
+
+        Args:
+            name: String name of a system sound. See the README.
+        """
+        self.alert_sound = name
 
     def setTimeToGiveUp_(self, time):
         """Configure alert to give up after time seconds."""
@@ -107,6 +119,8 @@ class Alert(NSAlert):
         # Make the python app the active app so alert is noticed.
         app = NSApplication.sharedApplication()
         app.activateIgnoringOtherApps_(True)
+        if self.alert_sound:
+            sound = NSSound.soundNamed_(self.alert_sound).play()
         result = self.runModal()  # pylint: disable=no-member
         print result
         return result
@@ -185,7 +199,7 @@ def get_idle():
     final = pattern.search(result)
     # Idle time is in really absurd units; convert to seconds.
     idle_time = float(final.group(2)) / 1000000000
-    syslog.syslog(syslog.LOG_ALERT, "System Idle: %f seconds out of %i "
+    syslog.syslog(syslog.LOG_ALERT, "System Idle: %i seconds out of %i "
                   "allowed." % (idle_time, MAXIDLE))
 
     return idle_time
@@ -216,6 +230,7 @@ def build_alert():
     alert.setInformativeText_("Click Cancel to prevent automatic logout.")
     alert.addButtonWithTitle_("Cancel")
     alert.setIconWithContentsOfFile_(ICON_PATH)
+    alert.setAlertSound_(ALERT_SOUND)
     alert.setTimeToGiveUp_(LO_TIMEOUT)
     return alert
 
@@ -223,8 +238,7 @@ def build_alert():
 def main():
     """Main program"""
     idle_time = get_idle()
-    #if idle_time > MAXIDLE:
-    if True:
+    if idle_time > MAXIDLE:
         syslog.syslog(syslog.LOG_ALERT, "System is idle.")
         syslog.syslog(syslog.LOG_ALERT, "Idle user: %s" % getpass.getuser())
         alert = build_alert()
@@ -242,10 +256,10 @@ def main():
             if shutdown_time and datetime.datetime.now() > shutdown_time:
                 syslog.syslog(syslog.LOG_ALERT, "Shutdown time is nigh. "
                               "Shutting down.")
-                #shutdown()
+                shutdown()
             else:
                 syslog.syslog(syslog.LOG_ALERT, "Restarting")
-                #restart()
+                restart()
     else:
         syslog.syslog(syslog.LOG_ALERT, "System is not idle.")
 
