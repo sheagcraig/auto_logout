@@ -26,6 +26,23 @@ In ```/usr/local/bin/auto_logout.py```:
 * ```MAXIDLE```: The number of seconds after which a system is considered to be idle. (Default is 1800 seconds, i.e. 30 minutes).
 * ```LO_TIMEOUT```: The number of seconds a user has to cancel the auto logout after the alert runs. (Configured for 120 seconds).
 * ```ICON_PATH```: A valid path to an icon file (a .png) to use in the alert window. (Defaults to a nasty dark cloud icon).
+* ```ALERT_SOUND```: Name of a sound to play when firing alert. See [Sounds](#sounds) section. (Defaults to "Submarine").
 
 In ```/Library/LaunchAgents/org.da.autoLogout.plist```
 * ```StartInterval``` The interval, in seconds, after which the LaunchAgent runs. (Defaults to run every 5 minutes).
+
+### Sounds
+If you want to use a different sound, you must provide the *name* of the sound, not the filename, and not the path. I.e "Sosumi", not "Sosumi.aiff" or "/System/Library/Sosumi.aiff".
+
+If you don't want a sound, set ```ALERT_SOUND``` to ```""``` or ```None```.
+
+The search path is:
+- ~/Library/Sounds
+- /Library/Sounds
+- /Network/Library/Sounds
+- /System/Library/Sounds (This is where all of the builtin sounds live)
+
+If you want to include a custom sound, it needs to be available in one of those paths. So for example, if you wanted to use the sound file "TotalEclipseOfTheHeart.aiff", copy it to ```/Library/Sounds``` (which may not exist by default), and set the ```ALERT_SOUND``` option like this: 
+```ALERT_SOUND = "TotalEclipseOfTheHeart"```
+
+Sounds must be a aiff; extension .aif is not valid.
