@@ -3,9 +3,10 @@
 # We have to be careful when editing the sudoers file. Syntax errors cause problems!
 #STRING="ALL	ALL=(root) NOPASSWD: /usr/bin/killall -9 loginwindow"
 REBOOT="ALL	ALL=(root) NOPASSWD: /sbin/reboot -q"
+FVREBOOT="ALL	ALL=(root) NOPASSWD: /usr/bin/fdesetup authrestart"
 SHUTDOWN="ALL	ALL=(root) NOPASSWD: /sbin/shutdown -h now"
 
-if $(grep -q "$REBOOT" /etc/sudoers) && $(grep -q "$SHUTDOWN" /etc/sudoers); then
+if $(grep -q "$REBOOT" /etc/sudoers) && $(grep -q "$SHUTDOWN" /etc/sudoers) && $(grep -q "$FVREBOOT" /etc/sudoers); then
 	# Nothing to be done
 	exit 0
 fi
@@ -14,6 +15,7 @@ fi
 cp /etc/sudoers /tmp/sudoers.tmp
 # Echo in our changes
 echo "$REBOOT" >> /tmp/sudoers.tmp
+echo "$FVREBOOT" >> /tmp/sudoers.tmp
 echo "$SHUTDOWN" >> /tmp/sudoers.tmp
 
 # Validate the changes
