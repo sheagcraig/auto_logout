@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+### Added
+- Tests for FileVault status, and when restarting, uses the fdesetup authrestart command to bypass the FileVault unlock screen.
 
 ## [1.5.4] - 2015-04-30 Nobody Tosses a Dwarf
 ### CHANGED

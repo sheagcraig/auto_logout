@@ -14,6 +14,8 @@ a change to the sudoers file, which is why there is a postinstall script. Please
 
 If the computer has a power schedule, and the machine is past the scheduled shutdown time, it will just shut down instead of reboot.
 
+If the boot drive is FileVaulted, `auto_logout` will restart using `fdesetup authrestart` instead of a regular reboot. This bypasses the FileVault unlock screen.
+
 ### Installation
 Grab the latest package from the releases section and install on clients to use the default timing and icon.
 

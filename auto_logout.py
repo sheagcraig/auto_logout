@@ -49,7 +49,7 @@ from AppKit import (NSImage, NSAlert, NSTimer, NSRunLoop, NSApplication,
 # pylint: enable=no-name-in-module
 
 
-__version__ = "1.5.4"
+__version__ = "1.6.4"
 # Number of seconds to wait before initiating a logout.
 MAXIDLE = 1800
 # Number of seconds user has to cancel logout.
@@ -154,10 +154,28 @@ def restart():
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
+def fvrestart():
+    """Forcibly restart a FV2 enabled computer."""
+    result = subprocess.check_output(
+        ["sudo", "-u", "root", "/usr/bin/fdesetup", "authrestart"])
+    syslog.syslog(syslog.LOG_ALERT, result)
+
+
 def shutdown():
     """Shutdown the computer immediately."""
     result = subprocess.check_output(["/sbin/shutdown", "-h", "now"])
     syslog.syslog(syslog.LOG_ALERT, result)
+
+
+def fv_active():
+    """Get FileVault status."""
+    result = subprocess.check_output(
+        ["/usr/bin/fdesetup", "status"])
+    status = False
+    if result == "FileVault is On.":
+        status = True
+
+    return status
 
 
 def get_shutdown_time():
@@ -259,7 +277,11 @@ def main():
                 shutdown()
             else:
                 syslog.syslog(syslog.LOG_ALERT, "Restarting")
-                restart()
+                if fv_active():
+                    syslog.syslog(syslog.LOG_ALERT, "Authenticated Restart.")
+                    fvrestart()
+                else:
+                    restart()
     else:
         syslog.syslog(syslog.LOG_ALERT, "System is not idle.")
 
