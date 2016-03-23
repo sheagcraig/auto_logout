@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.5.5] - 2016-03-23 Kick That FileVault
+## [1.6.4] - 2016-03-23 Kick That FileVault
 ### ADDED
 - Tests for FileVault status, and when restarting, uses the fdesetup authrestart command to bypass the FileVault unlock screen.
 
@@ -36,7 +36,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Computers with a power schedule fail to execute script.
 - Computers past shutdown time need an additional sudoers entry for shutdown privileges.
 
-[unreleased]: https://github.com/sheagcraig/yo/compare/1.5.4...HEAD
+[unreleased]: https://github.com/sheagcraig/yo/compare/1.6.4...HEAD
+[1.6.4]: https://github.com/sheagcraig/yo/compare/1.5.4...HEAD
 [1.5.4]: https://github.com/sheagcraig/auto_logout/compare/1.5.3...1.5.4
 [1.5.3]: https://github.com/sheagcraig/auto_logout/compare/1.5.2...1.5.3
 [1.5.2]: https://github.com/sheagcraig/auto_logout/compare/1.5.1...1.5.2
