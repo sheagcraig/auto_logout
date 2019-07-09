@@ -163,7 +163,7 @@ def fvrestart():
 
 def shutdown():
     """Shutdown the computer immediately."""
-    result = subprocess.check_output(["/sbin/shutdown", "-h", "now"])
+    result = subprocess.check_output(["sudo", "-u", "root", "/sbin/shutdown", "-h", "now"])
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
