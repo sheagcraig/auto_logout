@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Copyright (C) 2014 Shea G Craig
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-auto_logout.py
+auto_logout.py3
 
 Check for whether system idle time has exceeded some set amount of time,
 as specified in seconds with global MAXIDLE.
@@ -122,7 +122,7 @@ class Alert(NSAlert):
         if self.alert_sound:
             sound = NSSound.soundNamed_(self.alert_sound).play()
         result = self.runModal()  # pylint: disable=no-member
-        print result
+        print(result)
         return result
 
     # pylint: disable=no-self-use
@@ -189,7 +189,7 @@ def get_shutdown_time():
     result = subprocess.check_output(["pmset", "-g", "sched"])
 
     # Get the shutdown time
-    pattern = re.compile(r"(shutdown at )(\d{1,2}:\d{2}[AP]M)")
+    pattern = re.compile(rb"(shutdown at )(\d{1,2}:\d{2}[AP]M)")
     final = pattern.search(result)
 
     if final:
@@ -213,7 +213,7 @@ def get_idle():
 
     # Strip out the first result (there are lots and lots of results;
     # close enough!
-    pattern = re.compile(r'("HIDIdleTime" = )([0-9]*)')
+    pattern = re.compile(rb'("HIDIdleTime" = )([0-9]*)')
     final = pattern.search(result)
     # Idle time is in really absurd units; convert to seconds.
     idle_time = float(final.group(2)) / 1000000000
