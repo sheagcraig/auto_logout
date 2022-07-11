@@ -1,4 +1,9 @@
-## auto_logout
+## auto_logout py3
+This fork is an attempt to run under newer macOS builds that have dropped support for Python2.
+I have run the main script through `2to3` and made some minor tweaks to keep data types happy. So far it has had MINIMAL testing and should not be considered production-ready.
+
+All else in the readme as original -mima11july2022
+
 Package to automatically hard-logout users in OS X computer labs.
 
 Computers can be set using the builtin tools to automatically logout users
