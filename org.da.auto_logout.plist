@@ -6,7 +6,7 @@
 		<string>org.da.auto_logout</string>
 	<key>ProgramArguments</key>
 		<array>
-			<string>/usr/local/bin/auto_logout.py</string>
+			<string>/usr/local/bin/auto_logout.py3</string>
 		</array>
 	<key>KeepAlive</key>
 	<false/>
