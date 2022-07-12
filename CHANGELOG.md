@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+2022-07-11 Three's a Charm
+### Changed
+- first effort at python3 compatibility
+- also mima's first attempt at a github fork
+
 ## [1.6.4] - 2016-03-23 Kick That FileVault
 ### ADDED
 - Tests for FileVault status, and when restarting, uses the fdesetup authrestart command to bypass the FileVault unlock screen.
