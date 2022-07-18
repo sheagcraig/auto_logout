@@ -2,6 +2,9 @@
 This fork is an attempt to run under newer macOS builds that have dropped support for Python2.
 I have run the main script through `2to3` and made some minor tweaks to keep data types happy. So far it has had MINIMAL testing and should not be considered production-ready.
 
+the `pyobjc` library is required for AppKit frameworks that are used.
+`pip3 install pyobjc` appears to be an adequate prerequisite if using system python.
+
 All else in the readme as original -mima11july2022
 
 Package to automatically hard-logout users in OS X computer labs.
