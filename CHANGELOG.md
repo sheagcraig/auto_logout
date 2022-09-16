@@ -2,10 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-2022-07-11 Three's a Charm
+## [2.0.0] - 2022-09-16 Legacy No More
 ### Changed
-- first effort at python3 compatibility
-- also mima's first attempt at a github fork
+- Updated for python3 compatibility (thanks @mima-mima for kickstarting this and your PR)
+- Fixes broken fv function.
 
 ## [1.6.4] - 2016-03-23 Kick That FileVault
 ### ADDED
@@ -41,8 +41,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Computers with a power schedule fail to execute script.
 - Computers past shutdown time need an additional sudoers entry for shutdown privileges.
 
-[unreleased]: https://github.com/sheagcraig/yo/compare/1.6.4...HEAD
-[1.6.4]: https://github.com/sheagcraig/yo/compare/1.5.4...HEAD
+[unreleased]: https://github.com/sheagcraig/auto_logout/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/sheagcraig/auto_logout/compare/1.6.4...HEAD
+[1.6.4]: https://github.com/sheagcraig/auto_logout/compare/1.5.4...HEAD
 [1.5.4]: https://github.com/sheagcraig/auto_logout/compare/1.5.3...1.5.4
 [1.5.3]: https://github.com/sheagcraig/auto_logout/compare/1.5.2...1.5.3
 [1.5.2]: https://github.com/sheagcraig/auto_logout/compare/1.5.1...1.5.2
