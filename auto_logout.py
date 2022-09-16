@@ -143,39 +143,35 @@ def logout():
     documentation of how to do these things.
     """
     result = subprocess.check_output(["sudo", "-u", "root", "/usr/bin/killall",
-                                      "-9", "loginwindow"])
+                                      "-9", "loginwindow"], text=True)
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def restart():
     """Forcibly restart the computer."""
     result = subprocess.check_output(
-        ["sudo", "-u", "root", "/sbin/reboot", "-q"])
+        ["sudo", "-u", "root", "/sbin/reboot", "-q"], text=True)
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def fvrestart():
     """Forcibly restart a FV2 enabled computer."""
     result = subprocess.check_output(
-        ["sudo", "-u", "root", "/usr/bin/fdesetup", "authrestart"])
+        ["sudo", "-u", "root", "/usr/bin/fdesetup", "authrestart"], text=True)
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def shutdown():
     """Shutdown the computer immediately."""
-    result = subprocess.check_output(["sudo", "-u", "root", "/sbin/shutdown", "-h", "now"])
+    result = subprocess.check_output(["sudo", "-u", "root", "/sbin/shutdown", "-h", "now"],
+                                     text=True)
     syslog.syslog(syslog.LOG_ALERT, result)
 
 
 def fv_active():
     """Get FileVault status."""
-    result = subprocess.check_output(
-        ["/usr/bin/fdesetup", "status"])
-    status = False
-    if result == "FileVault is On.":
-        status = True
-
-    return status
+    result = subprocess.check_output(["/usr/bin/fdesetup", "status"], text=True)
+    return result == "FileVault is On.\n"
 
 
 def get_shutdown_time():
@@ -186,10 +182,10 @@ def get_shutdown_time():
         to shut itself down, or None if no schedule has been set.
     """
     # Get the schedule items from pmset
-    result = subprocess.check_output(["pmset", "-g", "sched"])
+    result = subprocess.check_output(["pmset", "-g", "sched"], text=True)
 
     # Get the shutdown time
-    pattern = re.compile(rb"(shutdown at )(\d{1,2}:\d{2}[AP]M)")
+    pattern = re.compile(r"(shutdown at )(\d{1,2}:\d{2}[AP]M)")
     final = pattern.search(result)
 
     if final:
@@ -209,11 +205,11 @@ def get_idle():
     Returns:
         Float number of seconds computer has been idle.
     """
-    result = subprocess.check_output(["ioreg", "-c", "IOHIDSystem"])
+    result = subprocess.check_output(["ioreg", "-c", "IOHIDSystem"], text=True)
 
     # Strip out the first result (there are lots and lots of results;
     # close enough!
-    pattern = re.compile(rb'("HIDIdleTime" = )([0-9]*)')
+    pattern = re.compile(r'("HIDIdleTime" = )([0-9]*)')
     final = pattern.search(result)
     # Idle time is in really absurd units; convert to seconds.
     idle_time = float(final.group(2)) / 1000000000
@@ -231,7 +227,7 @@ def get_loginwindow_pid():
     Returns: An int process ID for the loginwindow.
     """
     pid = None
-    result = subprocess.check_output(["ps", "-Axjc"])
+    result = subprocess.check_output(["ps", "-Axjc"], text=True)
     pattern = re.compile(r".*loginwindow")
     for line in result.splitlines():
         match = pattern.search(line)
