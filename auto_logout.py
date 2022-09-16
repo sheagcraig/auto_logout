@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-auto_logout.py3
+auto_logout.py
 
 Check for whether system idle time has exceeded some set amount of time,
 as specified in seconds with global MAXIDLE.
