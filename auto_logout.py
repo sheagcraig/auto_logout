@@ -49,7 +49,7 @@ from AppKit import (NSImage, NSAlert, NSTimer, NSRunLoop, NSApplication,
 # pylint: enable=no-name-in-module
 
 
-__version__ = "1.6.4"
+__version__ = "2.0.0"
 # Number of seconds to wait before initiating a logout.
 MAXIDLE = 1800
 # Number of seconds user has to cancel logout.

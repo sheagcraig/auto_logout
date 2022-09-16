@@ -16,9 +16,19 @@ If the computer has a power schedule, and the machine is past the scheduled shut
 If the boot drive is FileVaulted, `auto_logout` will restart using `fdesetup authrestart` instead of a regular reboot. This bypasses the FileVault unlock screen.
 
 ### Installation
-Grab the latest package from the releases section and install on clients to use the default timing and icon.
+1. Grab the latest package from the releases section
+2. Ensure your clients have a python3 with PyObjC installed that will
+   resolve when you do `which python3`
+3. Install on clients to use the default timing and icon.
 
 If you would like to build yourself to incorporate custom settings, a Makefile is provided for use with [the Luggage](https://github.com/unixorn/luggage). Of course, feel free to use your choice of package building software.
+
+Probably turning this into a munkipkg would be a logical 2022 move :)
+
+Also, if for some reason you _don't_ have a python3 available, you might
+as well add
+[relocatable-python](https://github.com/gregneagle/relocatable-python)
+to the package.
 
 ### Customization
 There are a few variables that you can adjust to suit your environment.
